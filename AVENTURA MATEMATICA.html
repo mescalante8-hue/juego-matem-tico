@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz Aventura Matemática</title>
+<style>
+*{box-sizing:border-box}
+:root{--ink:#1d1740;--purple:#7c3aed;--pink:#ec4899;--blue:#2563eb;--cyan:#06b6d4;--yellow:#fbbf24;--green:#10b981}
+body{margin:0;font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;color:var(--ink);min-height:100vh;overflow-x:hidden;background:#20134d}
+body:before,body:after{content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:-1}
+body:before{width:430px;height:430px;left:-170px;top:-130px;background:#ec489955;box-shadow:900px 500px 0 90px #06b6d433}
+body:after{width:360px;height:360px;right:-130px;top:130px;background:#22d3ee44}
+.wrap{max-width:1100px;margin:auto;padding:18px}
+.top{color:white;display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.logo{font-size:26px;font-weight:1000;text-shadow:3px 3px 0 #140b35}
+.pill{background:#ffffff1c;border:2px solid #ffffff55;padding:8px 12px;border-radius:999px;font-weight:900;margin:3px;display:inline-block;backdrop-filter:blur(7px)}
+.card{background:#fff;border:4px solid #20134d;border-radius:30px;padding:28px;box-shadow:9px 11px 0 #120a32,0 25px 70px #0005;position:relative;overflow:hidden}
+.card:after{content:"";position:absolute;inset:9px;border:2px dashed #7c3aed26;border-radius:22px;pointer-events:none}
+.center{text-align:center}
+h1{font-size:46px;margin:8px 0;font-weight:1000;color:#5b21b6;text-shadow:2px 2px 0 #f5d0fe}
+h2{font-weight:1000;color:#31205f}.lead{color:#626b7f;font-size:18px;line-height:1.5}
+.hero{display:flex;justify-content:center;align-items:center;gap:12px;font-size:70px;margin:4px}
+.character{display:inline-block;animation:bob 1.8s ease-in-out infinite;filter:drop-shadow(4px 5px 0 #20134d33)}
+.character:nth-child(2){animation-delay:.2s}
+.character:nth-child(3){animation-delay:.4s}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+input{padding:15px;border:3px solid #20134d;border-radius:18px;font-size:17px;width:min(420px,100%);font-family:inherit}
+.btn{border:3px solid #20134d;border-radius:18px;padding:13px 20px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:white;font:900 16px inherit;box-shadow:0 6px 0 #20134d;transition:.12s}
+.btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 9px 0 #20134d}.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #20134d}
+.alt{background:#e9e5ff;color:#4525a8}.red{background:#ffe1e8;color:#9f2637}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.level{border:4px solid #20134d;background:#fff;padding:17px 10px;min-height:180px;border-radius:23px;box-shadow:5px 6px 0 #20134d33;position:relative;overflow:hidden;transition:.18s}
+.level:before{content:"";height:9px;position:absolute;top:0;left:0;right:0;background:linear-gradient(90deg,#7c3aed,#ec4899,#06b6d4)}
+.level:hover{transform:translateY(-7px) rotate(-1deg);box-shadow:7px 11px 0 #20134d33}.lock{opacity:.43;cursor:not-allowed}
+.icon{font-size:48px}.small{color:#697386;font-size:13px}
+.gamehead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.meter{height:18px;background:#e8e5f2;border:3px solid #20134d;border-radius:99px;margin:18px 0;overflow:hidden}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#ec4899,#fbbf24);width:0;transition:.35s}
+.question{font-size:28px;font-weight:1000;line-height:1.3;margin:20px 0;color:#31205f}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.opt{border:3px solid #20134d;background:#fff;padding:17px;border-radius:18px;text-align:left;min-height:70px;font:900 16px inherit;box-shadow:4px 5px 0 #20134d22;transition:.13s}
+.opt:hover{transform:translateY(-3px) rotate(.5deg);background:#faf7ff}.opt.ok{background:#c9fce3;border-color:#087f4f}.opt.no{background:#ffdbe2;border-color:#bd3047}
+.fb{display:none;padding:15px;border-radius:17px;margin-top:15px;line-height:1.4;border:3px solid #20134d}
+.good{display:block;background:#c9fce3;color:#17633f}.bad{display:block;background:#ffdbe2;color:#8b2839}
+.hidden{display:none}.score{font-size:65px;font-weight:1000;color:#7c3aed;text-shadow:2px 3px 0 #f5d0fe}.stars{font-size:35px}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.arcade-title{display:inline-block;background:#20134d;color:white;padding:7px 15px;border-radius:999px;transform:rotate(-2deg);box-shadow:4px 5px 0 #ec4899}
+.badge{display:inline-block;background:#fbbf24;color:#20134d;border:3px solid #20134d;padding:6px 12px;border-radius:999px;font-weight:1000;box-shadow:3px 4px 0 #20134d33}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){h1{font-size:35px}.opts{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.card{padding:21px}.hero{font-size:52px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div class="logo">🧠 Quiz Aventura Matemática</div><div><span class="pill">👤 <span id="user">Jugador</span></span><span class="pill">🏆 Récord <span id="record">0</span></span></div></div>
+
+<section id="login" class="card center">
+<div class="hero"><span class="character">🧙‍♀️</span><span class="character">🎮</span><span class="character">🤓</span></div>
+<div class="arcade-title">🎮 MODO AVENTURA</div><h1>¡La aventura comienza!</h1>
+<p class="lead">5 niveles · 10 preguntas por nivel · <b>500 puntos máximos</b>.<br>
+<b>Necesitas mínimo 7 respuestas correctas de 10 para superar cada nivel.</b></p>
+<input id="name" maxlength="25" placeholder="Escribe tu nombre">
+<br><br><button class="btn" onclick="enter()">🚀 Entrar al juego</button>
+</section>
+
+<section id="map" class="card hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+<div><div class="badge">🗺️ MAPA DE AVENTURA</div><h2>Elige tu misión</h2><div class="small">Cada respuesta correcta vale 50 puntos.</div></div>
+<button class="btn alt" onclick="logout()">Cambiar nombre</button>
+</div>
+<div id="levels" class="grid" style="margin-top:18px"></div>
+</section>
+
+<section id="game" class="card hidden">
+<div class="gamehead"><div><div class="badge">⚔️ MISIÓN ACTIVA</div><h2 id="lname"></h2><div class="small" id="topic"></div></div>
+<div><span class="pill">✅ <span id="correct">0</span>/10</span><span class="pill">⭐ <span id="score">0</span>/500</span></div></div>
+<div class="meter"><span id="bar"></span></div><div class="small" id="counter"></div>
+<div class="question" id="q"></div><div class="opts" id="opts"></div><div id="fb" class="fb"></div>
+<div class="actions"><button class="btn red" onclick="map()">🗺️ Salir</button><button class="btn" id="next" disabled onclick="next()">Siguiente →</button></div>
+</section>
+
+<section id="result" class="card center hidden">
+<div class="hero"><span class="character">🎉</span><span id="emo" class="character" style="font-size:75px">🏆</span><span class="character">⭐</span></div><h2 id="title"></h2><div class="stars" id="stars"></div>
+<div class="score" id="final">0/500</div><p class="lead" id="resultText"></p>
+<button class="btn" onclick="retry()">🔄 Jugar de nuevo</button>
+<button class="btn alt" onclick="map()">🗺️ Mapa</button>
+</section>
+</div>
+
+<script>
+const levels = [{"name": "Nivel 1", "title": "Exploradores de números", "topic": "Número, cantidad y clasificación", "icon": "🔢", "questions": [["¿Cuál de estas opciones representa una cantidad?", ["7", "7 kilogramos", "π", "√2"], 1], ["¿Cuántos dígitos utiliza el sistema decimal?", ["8", "9", "10", "12"], 2], ["¿Cuál pertenece a los números naturales?", ["-4", "3", "1/2", "√2"], 1], ["¿Cuál pertenece a los números enteros?", ["-7", "2/3", "π", "√3"], 0], ["¿Cuál es un número racional?", ["π", "√2", "3/4", "√3"], 2], ["¿Cuál es un número irracional?", ["5", "-2", "7/8", "√2"], 3], ["¿Qué conjunto incluye a los números racionales e irracionales?", ["Naturales", "Enteros", "Reales", "Solo enteros"], 2], ["¿Qué es un número?", ["Una unidad de medida", "Un concepto para representar conteo, medida y orden", "Una cantidad física", "Solo un símbolo"], 1], ["¿Cuál de estos es un número real?", ["√2", "π", "3/4", "Todos los anteriores"], 3], ["¿Cuál NO es irracional?", ["√5", "π", "3/2", "√7"], 2]]}, {"name": "Nivel 2", "title": "Detectives de conjuntos", "topic": "N, Z, Q, I y números positivos y negativos", "icon": "🧩", "questions": [["Una deuda de $15.000.000 se representa con:", ["15.000.000", "-15.000.000", "0", "15/1"], 1], ["4 grados bajo cero se representa como:", ["4", "-4", "0", "1/4"], 1], ["¿Cuál es mayor?", ["-5", "-2", "-8", "-10"], 1], ["¿Cuál NO puede ser denominador de una fracción?", ["2", "5", "-3", "0"], 3], ["En 3/10, ¿cuál es el numerador?", ["10", "3", "13", "30"], 1], ["En 3/10, ¿qué indica el denominador?", ["Las partes tomadas", "En cuántas partes se divide la unidad", "El valor decimal", "El signo"], 1], ["¿Cuál fracción equivale a 1/2?", ["2/3", "2/4", "3/5", "4/7"], 1], ["¿Cuál relación entre conjuntos es correcta?", ["N ⊂ Z ⊂ Q ⊂ R", "R ⊂ Q ⊂ Z ⊂ N", "Q ⊂ N ⊂ Z ⊂ R", "Z ⊂ N ⊂ Q ⊂ R"], 0], ["¿Cuál es entero y racional?", ["-6", "√2", "π", "√7"], 0], ["¿Cuál pertenece a Q pero no a Z?", ["-4", "7/3", "5", "0"], 1]]}, {"name": "Nivel 3", "title": "Maestros de fracciones", "topic": "Fracciones y operaciones", "icon": "🍕", "questions": [["2/6 + 3/6 =", ["4/6", "5/6", "5/12", "1/6"], 1], ["5/9 - 3/9 =", ["2/9", "8/9", "2/18", "1/9"], 0], ["1/4 + 2/4 =", ["2/4", "3/4", "3/8", "1/2"], 1], ["7/10 - 2/10 =", ["5/10", "9/10", "5/20", "2/10"], 0], ["3/2 en decimal es:", ["0,5", "1,5", "2,5", "3,2"], 1], ["0,75 como fracción simplificada es:", ["1/4", "2/3", "3/4", "4/5"], 2], ["2/5 + 1/5 =", ["2/10", "3/5", "3/10", "1/5"], 1], ["3 partes de una pizza dividida en 8 representan:", ["8/3", "3/8", "5/8", "3/5"], 1], ["¿Cuál fracción es equivalente a 2/3?", ["4/6", "3/4", "5/8", "2/6"], 0], ["1/2 + 1/3 =", ["2/5", "5/6", "1/6", "3/5"], 1]]}, {"name": "Nivel 4", "title": "Potencias y raíces", "topic": "Potenciación y radicación", "icon": "⚡", "questions": [["2³ =", ["5", "6", "8", "9"], 2], ["En 5², ¿cuál es la base?", ["2", "5", "10", "25"], 1], ["En 4³, ¿cuál es el exponente?", ["4", "3", "12", "64"], 1], ["3² × 3³ =", ["3⁵", "3⁶", "6⁵", "9⁵"], 0], ["2⁻² =", ["-4", "4", "1/4", "1/2"], 2], ["4 × 4 × 4 equivale a:", ["4²", "3⁴", "4³", "12"], 2], ["√16 =", ["2", "4", "8", "16"], 1], ["∛(-8) =", ["-4", "-2", "2", "8"], 1], ["5² =", ["10", "20", "25", "32"], 2], ["√81 =", ["7", "8", "9", "10"], 2]]}, {"name": "Nivel 5", "title": "Gran desafío matemático", "topic": "Aplicación de números y operaciones", "icon": "👑", "questions": [["1/2 + 1/4 =", ["2/6", "3/4", "1/6", "3/8"], 1], ["3/4 de 20 km =", ["10 km", "12 km", "15 km", "16 km"], 2], ["3/8 de $80 =", ["$20", "$25", "$30", "$35"], 2], ["Orden de menor a mayor:", ["-1, -3, 0, 2", "-3, -1, 0, 2", "0, -1, -3, 2", "-3, 0, -1, 2"], 1], ["1/2 pertenece a:", ["N solamente", "Z solamente", "Q y R", "I solamente"], 2], ["¿Cuál es real pero irracional?", ["4/5", "-7", "√3", "2"], 2], ["Un cuadrado tiene área 49 cm². ¿Cuánto mide su lado?", ["6 cm", "7 cm", "14 cm", "49 cm"], 1], ["2/5 + 3/6 =", ["7/11", "9/10", "5/11", "6/10"], 1], ["¿Cuál es racional?", ["√5", "π", "-7/2", "√11"], 2], ["3/8 de 24 unidades =", ["6", "8", "9", "12"], 2]]}];
+let player="",L=0,Q=0,score=0,correct=0,answered=false;
+let unlocked=Number(localStorage.getItem("unlocked")||1);
+let record=Number(localStorage.getItem("record")||0);
+document.getElementById("record").textContent=record;
+
+function hide(){["login","map","game","result"].forEach(x=>document.getElementById(x).classList.add("hidden"))}
+function enter(){
+ player=document.getElementById("name").value.trim()||"Jugador";
+ localStorage.setItem("player",player);
+ document.getElementById("user").textContent=player;
+ map();
+}
+function logout(){hide();document.getElementById("login").classList.remove("hidden")}
+function map(){hide();render();document.getElementById("map").classList.remove("hidden")}
+function render(){
+ let b=document.getElementById("levels");b.innerHTML="";
+ levels.forEach((x,i)=>{
+  let e=document.createElement("button");
+  e.className="level"+(i+1>unlocked?" lock":"");
+  e.innerHTML=`<div class="icon">${x.icon}</div><b>${x.name}</b><div class="small">${x.title}</div><div class="small">${i+1>unlocked?"🔒 Bloqueado":"🎯 10 preguntas · ⭐ 500 pts"}</div>`;
+  if(i+1<=unlocked)e.onclick=()=>start(i);
+  b.appendChild(e);
+ });
+}
+function start(i){L=i;Q=0;score=0;correct=0;hide();document.getElementById("game").classList.remove("hidden");showQ()}
+function showQ(){
+ answered=false;
+ let x=levels[L],q=x.questions[Q];
+ document.getElementById("lname").textContent=x.name+" · "+x.title;
+ document.getElementById("topic").textContent=x.topic;
+ document.getElementById("counter").textContent="Pregunta "+(Q+1)+" de 10";
+ document.getElementById("bar").style.width=(Q*10)+"%";
+ document.getElementById("q").textContent=q[0];
+ let o=document.getElementById("opts");o.innerHTML="";
+ q[1].forEach((v,i)=>{let b=document.createElement("button");b.className="opt";b.textContent=v;b.onclick=()=>answer(i,b);o.appendChild(b)});
+ let f=document.getElementById("fb");f.className="fb";f.style.display="none";
+ document.getElementById("next").disabled=true;
+ document.getElementById("next").textContent=Q===9?"Terminar nivel":"Siguiente →";
+}
+function answer(i,btn){
+ if(answered)return;answered=true;
+ let q=levels[L].questions[Q];
+ document.querySelectorAll(".opt").forEach((b,j)=>{if(j===q[2])b.classList.add("ok");if(j===i&&i!==q[2])b.classList.add("no")});
+ let f=document.getElementById("fb");
+ if(i===q[2]){correct++;score+=50;f.className="fb good";f.innerHTML="<b>✅ ¡Correcto! +50 puntos.</b>"}
+ else{f.className="fb bad";f.innerHTML="<b>❌ Incorrecto.</b> La respuesta correcta es: <b>"+q[1][q[2]]+"</b>"}
+ f.style.display="block";
+ document.getElementById("correct").textContent=correct;
+ document.getElementById("score").textContent=score;
+ document.getElementById("next").disabled=false;
+}
+function next(){if(!answered)return;if(Q<9){Q++;showQ()}else finish()}
+function finish(){
+ let pass=correct>=7;
+ hide();document.getElementById("result").classList.remove("hidden");
+ document.getElementById("final").textContent=score+"/500";
+ document.getElementById("stars").textContent=correct>=9?"⭐⭐⭐":pass?"⭐⭐":"⭐";
+ document.getElementById("emo").textContent=pass?"🏆":"🔄";
+ document.getElementById("title").textContent=pass?"¡Nivel superado, "+player+"!":"¡Debes volver a intentarlo!";
+ document.getElementById("resultText").textContent=pass?
+ "Lograste "+correct+"/10 correctas. ¡Puedes jugar otra vez para mejorar tu puntuación!":
+ "Lograste "+correct+"/10 correctas. Necesitas al menos 7 para pasar el nivel.";
+ if(pass&&L+1===unlocked&&unlocked<5){unlocked++;localStorage.setItem("unlocked",unlocked)}
+ if(score>record){record=score;localStorage.setItem("record",record);document.getElementById("record").textContent=record}
+}
+function retry(){start(L)}
+let saved=localStorage.getItem("player");
+if(saved){document.getElementById("name").value=saved;document.getElementById("user").textContent=saved}
+</script>
+</body></html>
